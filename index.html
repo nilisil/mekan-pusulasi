@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mekan Pusulası</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        earth: {
+                            50: '#f4f3ef', 100: '#e6e2d6', 200: '#d0c8b3', 300: '#b4a687',
+                            400: '#9b8761', 500: '#87704e', 600: '#6c5641', 700: '#584638',
+                            800: '#493a31', 900: '#40332d',
+                        },
+                        leaf: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f4f3ef;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236c5641' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .winner-highlight {
+            animation: pulse-winner 1.5s infinite;
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+            border-color: #22c55e !important;
+        }
+
+        @keyframes pulse-winner {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d0c8b3; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b4a687; }
+
+        .hidden-section { display: none !important; }
+    </style>
+</head>
+<body class="text-earth-900 min-h-screen relative overflow-x-hidden font-sans flex flex-col">
+
+    <header class="bg-white/90 backdrop-blur-md border-b border-earth-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-leaf-700">
+                <i class="fa-solid fa-map-location-dot text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight">Mekan Pusulası</h1>
+            </div>
+
+            <div id="user-menu" class="hidden-section flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 text-earth-600 text-sm bg-earth-100/50 px-3 py-1.5 rounded-full">
+                    <i class="fa-solid fa-user"></i>
+                    <span id="user-email-display" class="font-medium truncate max-w-[150px]"></span>
+                </div>
+                <button id="logout-btn" class="text-earth-500 hover:text-red-500 transition-colors p-2 text-sm font-medium">
+                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="auth-section" class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl shadow-earth-900/10 border border-earth-100 p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <i class="fa-solid fa-compass text-4xl text-leaf-600 mb-3"></i>
+                <h2 class="text-2xl font-bold text-earth-800">Hoş Geldiniz</h2>
+                <p class="text-earth-500 text-sm mt-1">Mekan listenizi oluşturmak için giriş yapın.</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-earth-700 mb-1">E-posta Adresi</label>
+                    <input type="email" id="login-email" required class="w-full px-4 py-2.5 rounded-lg border border-earth-300 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none bg-earth-50/50 transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-earth-700 mb-1">Şifre</label>
+                    <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-lg border border-earth-300 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none bg-earth-50/50 transition-all">
+                </div>
+                <button type="submit" id="login-submit-btn" class="w-full bg-leaf-600 hover:bg-leaf-700 text-white font-medium py-3 rounded-lg transition-colors shadow-md flex justify-center items-center gap-2">
+                    Giriş Yap
+                </button>
+                <div class="text-center mt-4">
+                    <button type="button" id="show-register-btn" class="text-sm text-leaf-600 hover:text-leaf-700 font-medium transition-colors">
+                        Hesabınız yok mu? Kayıt olun.
+                    </button>
+                </div>
+            </form>
+
+            <form id="register-form" class="space-y-4 hidden-section">
+                <div>
+                    <label class="block text-sm font-medium text-earth-700 mb-1">E-posta Adresi</label>
+                    <input type="email" id="register-email" required class="w-full px-4 py-2.5 rounded-lg border border-earth-300 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none bg-earth-50/50 transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-earth-700 mb-1">Şifre (En az 6 karakter)</label>
+                    <input type="password" id="register-password" required minlength="6" class="w-full px-4 py-2.5 rounded-lg border border-earth-300 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none bg-earth-50/50 transition-all">
+                </div>
+                <button type="submit" id="register-submit-btn" class="w-full bg-earth-700 hover:bg-earth-800 text-white font-medium py-3 rounded-lg transition-colors shadow-md flex justify-center items-center gap-2">
+                    Kayıt Ol
+                </button>
+                <div class="text-center mt-4">
+                    <button type="button" id="show-login-btn" class="text-sm text-earth-600 hover:text-earth-700 font-medium transition-colors">
+                        Zaten hesabınız var mı? Giriş yapın.
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <main id="app-section" class="hidden-section flex-grow max-w-5xl mx-auto w-full px-4 py-6 md:py-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="space-y-6 flex flex-col h-[calc(100vh-120px)] lg:h-auto min-h-[500px]">
+            <div class="bg-white rounded-2xl shadow-lg shadow-earth-900/5 border border-earth-100 overflow-hidden flex-shrink-0">
+                <div class="bg-leaf-600 text-white px-5 py-3 flex items-center gap-3">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <h2 class="text-base font-semibold">Yeni Mekan Ekle</h2>
+                </div>
+                <div class="p-5">
+                    <form id="add-place-form" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-earth-500 mb-1">Mekan Adı</label>
+                                <input type="text" id="place-name" required placeholder="Örn: Tarihi Kafe" class="w-full px-3 py-2 rounded-lg border border-earth-300 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none bg-earth-50/50 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-earth-500 mb-1">Konum / Semt</label>
+                                <input list="locations-list" id="place-location" required placeholder="Örn: Kadıköy" class="w-full px-3 py-2 rounded-lg border border-earth-300 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none bg-earth-50/50 text-sm">
+                                <datalist id="locations-list">
+                                    <option value="Kadıköy"></option>
+                                    <option value="Beşiktaş"></option>
+                                    <option value="Çankaya"></option>
+                                    <option value="Tunalı"></option>
+                                    <option value="Kızılay"></option>
+                                    <option value="Alsancak"></option>
+                                    <option value="Bostanlı"></option>
+                                </datalist>
+                            </div>
+                        </div>
+                        <button type="submit" id="add-submit-btn" class="w-full bg-leaf-600 hover:bg-leaf-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm shadow-md">
+                            Listeme Kaydet
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg shadow-earth-900/5 border border-earth-100 flex flex-col flex-grow overflow-hidden">
+                <div class="px-5 py-3 border-b border-earth-100 flex items-center justify-between bg-earth-50/50">
+                    <h2 class="text-base font-semibold text-earth-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list-ul text-leaf-600"></i> Kayıtlı Mekanlarım
+                    </h2>
+                    <span id="place-count" class="bg-leaf-100 text-leaf-800 border border-leaf-200 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+                <div class="flex-grow overflow-y-auto p-3 bg-earth-50/30">
+                    <ul id="places-list" class="space-y-2">
+                        <div id="loading-state" class="text-center text-earth-400 py-10 flex flex-col items-center gap-3">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+                            <p class="text-sm">Mekanlarınız yükleniyor...</p>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="h-full flex flex-col">
+            <div class="bg-white rounded-3xl shadow-xl shadow-earth-900/10 border border-earth-200 flex-grow flex flex-col relative overflow-hidden h-[500px] lg:h-auto">
+                <i class="fa-regular fa-compass absolute -right-8 -bottom-8 text-[200px] text-earth-100 opacity-50 pointer-events-none transform -rotate-12"></i>
+
+                <div class="p-6 md:p-10 flex-grow flex flex-col justify-center items-center relative z-10 text-center">
+                    <h2 class="text-2xl font-bold text-earth-800 mb-2">Kararsız Mısınız?</h2>
+                    <p class="text-earth-500 mb-8 text-sm max-w-[250px] mx-auto">Seçtiğiniz semtte kayıtlı mekanlar arasından rastgele birini seçin.</p>
+
+                    <div class="w-full max-w-xs text-left mb-5">
+                        <label for="roulette-area" class="block text-sm font-medium text-earth-700 mb-1">Hangi semtte arayalım?</label>
+                        <select id="roulette-area" disabled class="w-full px-3 py-2.5 rounded-lg border border-earth-300 bg-white text-earth-800 focus:ring-2 focus:ring-leaf-500 focus:border-leaf-500 outline-none disabled:bg-earth-50 disabled:text-earth-400">
+                            <option value="">Önce mekan ekleyin</option>
+                        </select>
+                    </div>
+
+                    <div id="roulette-box" class="w-full max-w-sm h-32 md:h-40 bg-earth-800 rounded-2xl shadow-inner border-4 border-earth-900 flex items-center justify-center relative overflow-hidden mb-8 transition-colors duration-500">
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+                        <div id="roulette-result" class="text-white text-xl md:text-2xl font-bold text-center px-4 z-10 w-full truncate">
+                            <span class="text-earth-400 font-normal text-base md:text-lg flex flex-col items-center gap-2">
+                                <i class="fa-solid fa-crosshairs text-2xl"></i> Hedef Bekleniyor
+                            </span>
+                        </div>
+                    </div>
+
+                    <button id="spin-btn" disabled class="group relative overflow-hidden rounded-full bg-gradient-to-r from-leaf-600 to-leaf-500 text-white font-bold text-lg md:text-xl py-3.5 md:py-4 px-10 md:px-12 shadow-[0_10px_20px_rgba(22,163,74,0.3)] hover:shadow-[0_15px_30px_rgba(22,163,74,0.4)] transition-all transform hover:-translate-y-1 active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none">
+                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
+                        <span class="relative flex items-center gap-2">
+                            <i class="fa-solid fa-dice"></i> Pusulayı Döndür
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="alert-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-earth-900/60 backdrop-blur-sm p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full transform scale-95 transition-transform duration-300" id="alert-content">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 mb-4 text-amber-600 text-xl">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <h3 id="alert-title" class="text-lg font-semibold text-earth-900 mb-2">Uyarı</h3>
+                <p id="alert-message" class="text-sm text-earth-500 mb-6">Mesaj buraya gelecek.</p>
+                <button onclick="closeAlert()" class="w-full rounded-lg bg-earth-800 py-2 text-white font-medium hover:bg-earth-900 transition-colors">
+                    Tamam
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = 'mekan-pusulasi-auth';
+        const firebaseConfig = window.firebaseConfig || {
+            apiKey: "dummy",
+            authDomain: "dummy",
+            projectId: "dummy"
+        };
+
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase Init Error:", e);
+        }
+
+        let places = [];
+        let isSpinning = false;
+        let currentUser = null;
+        let unsubSnapshot = null;
+
+        const authSection = document.getElementById('auth-section');
+        const appSection = document.getElementById('app-section');
+        const userMenu = document.getElementById('user-menu');
+        const userEmailDisplay = document.getElementById('user-email-display');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const addPlaceForm = document.getElementById('add-place-form');
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const placesList = document.getElementById('places-list');
+        const placeCount = document.getElementById('place-count');
+        const spinBtn = document.getElementById('spin-btn');
+        const rouletteArea = document.getElementById('roulette-area');
+        const rouletteResult = document.getElementById('roulette-result');
+        const rouletteBox = document.getElementById('roulette-box');
+
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.classList.add('hidden-section');
+            registerForm.classList.remove('hidden-section');
+        });
+
+        showLoginBtn.addEventListener('click', () => {
+            registerForm.classList.add('hidden-section');
+            loginForm.classList.remove('hidden-section');
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-submit-btn');
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Giriş Yapılıyor...`;
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                let msg = "E-posta veya şifre hatalı. Lütfen tekrar deneyin.";
+                if (error.code === 'auth/api-key-not-valid') {
+                    msg = "Firebase API anahtarı geçersiz. Firebase Console > Project settings > Web app içinden doğru apiKey değerini yapıştırın.";
+                }
+                showAlert("Giriş Başarısız", msg);
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Giriş Yap`;
+            }
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const btn = document.getElementById('register-submit-btn');
+
+            if (password.length < 6) {
+                showAlert("Uyarı", "Şifre en az 6 karakter olmalıdır.");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Kayıt Olunuyor...`;
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                let msg = "Kayıt olurken bir hata oluştu.";
+                if (error.code === 'auth/email-already-in-use') msg = "Bu e-posta adresi zaten kullanımda.";
+                if (error.code === 'auth/api-key-not-valid') {
+                    msg = "Firebase API anahtarı geçersiz. Firebase Console > Project settings > Web app içinden doğru apiKey değerini yapıştırın.";
+                }
+                showAlert("Kayıt Başarısız", msg);
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Kayıt Ol`;
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Sign out error", error);
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                authSection.classList.add('hidden-section');
+                appSection.classList.remove('hidden-section');
+                userMenu.classList.remove('hidden-section');
+                userEmailDisplay.textContent = user.email || 'Anonim Kullanıcı';
+                loadUserPlaces();
+            } else {
+                currentUser = null;
+                authSection.classList.remove('hidden-section');
+                appSection.classList.add('hidden-section');
+                userMenu.classList.add('hidden-section');
+                loginForm.reset();
+                registerForm.reset();
+                places = [];
+                if (unsubSnapshot) unsubSnapshot();
+            }
+        });
+
+        function loadUserPlaces() {
+            if (!currentUser) return;
+
+            const userPlacesCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'places');
+
+            unsubSnapshot = onSnapshot(userPlacesCol, (snapshot) => {
+                places = [];
+                snapshot.forEach((doc) => {
+                    places.push({ id: doc.id, ...doc.data() });
+                });
+
+                places.sort((a, b) => {
+                    const timeA = a.createdAt ? a.createdAt.toMillis() : 0;
+                    const timeB = b.createdAt ? b.createdAt.toMillis() : 0;
+                    return timeB - timeA;
+                });
+
+                updateRouletteAreas();
+                renderPlacesList();
+                validateSpinButton();
+            }, (error) => {
+                console.error("Snapshot Error:", error);
+                showAlert("Firestore Bağlantı Hatası", `Mekanlar yüklenemedi (${error.code || 'bilinmeyen hata'}): ${error.message}`);
+            });
+        }
+
+        function renderPlacesList() {
+            placeCount.textContent = places.length;
+
+            if (places.length === 0) {
+                placesList.innerHTML = `
+                    <div class="text-center text-earth-400 py-8 flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-map-location text-3xl opacity-50 mb-2"></i>
+                        <p class="text-sm font-medium">Listeniz şu an boş.</p>
+                        <p class="text-xs">Yukarıdan ilk mekanınızı ekleyin!</p>
+                    </div>`;
+                return;
+            }
+
+            placesList.innerHTML = '';
+            places.forEach(place => {
+                const li = document.createElement('li');
+                li.className = "bg-white border border-earth-100 rounded-xl p-3 flex items-center justify-between shadow-sm group hover:border-leaf-200 transition-colors";
+
+                li.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-8 h-8 rounded-full bg-leaf-50 flex items-center justify-center text-leaf-600 flex-shrink-0">
+                            <i class="fa-solid fa-location-dot text-xs"></i>
+                        </div>
+                        <div class="truncate">
+                            <h3 class="font-semibold text-earth-800 text-sm truncate">${escapeHTML(place.name)}</h3>
+                            <p class="text-[11px] text-earth-500">${escapeHTML(place.area)}</p>
+                        </div>
+                    </div>
+                    <button class="delete-btn text-earth-300 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50 focus:outline-none" data-id="${place.id}" title="Sil">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                placesList.appendChild(li);
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if (!currentUser) return;
+                    const id = e.currentTarget.getAttribute('data-id');
+                    try {
+                        const placeRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'places', id);
+                        await deleteDoc(placeRef);
+                    } catch (error) {
+                        console.error("Silme hatası:", error);
+                        showAlert("Hata", "Mekan silinemedi.");
+                    }
+                });
+            });
+        }
+
+        addPlaceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const nameInput = document.getElementById('place-name');
+            const locationInput = document.getElementById('place-location');
+            const name = nameInput.value.trim();
+            const area = locationInput.value.trim();
+
+            if (!name || !area) return;
+
+            const submitBtn = document.getElementById('add-submit-btn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Ekleniyor...`;
+
+            try {
+                const userPlacesCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'places');
+                const savePromise = addDoc(userPlacesCol, {
+                    name: name,
+                    area: area,
+                    createdAt: serverTimestamp()
+                });
+
+                nameInput.value = '';
+                locationInput.value = '';
+                nameInput.focus();
+                savePromise.catch((error) => {
+                    console.error("Ekleme hatası:", error);
+                    if (!nameInput.value && !locationInput.value) {
+                        nameInput.value = name;
+                        locationInput.value = area;
+                    }
+                    showAlert("Firestore Kayıt Hatası", `Mekan kaydedilemedi (${error.code || 'bilinmeyen hata'}): ${error.message}`);
+                });
+            } catch (error) {
+                console.error("Ekleme hatası:", error);
+                showAlert("Firestore Kayıt Hatası", `Mekan kaydedilemedi (${error.code || 'bilinmeyen hata'}): ${error.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+
+        function updateRouletteAreas() {
+            const selectedArea = rouletteArea.value;
+            const areas = [...new Set(places.map(place => place.area?.trim()).filter(Boolean))]
+                .sort((a, b) => a.localeCompare(b, 'tr'));
+
+            rouletteArea.innerHTML = '<option value="">Semt seçin</option>';
+            areas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area;
+                option.textContent = area;
+                rouletteArea.appendChild(option);
+            });
+
+            rouletteArea.disabled = areas.length === 0 || isSpinning;
+            rouletteArea.value = areas.includes(selectedArea) ? selectedArea : '';
+        }
+
+        function getSelectedAreaPlaces() {
+            if (!rouletteArea.value) return [];
+            return places.filter(place => place.area?.trim() === rouletteArea.value);
+        }
+
+        function validateSpinButton() {
+            const areaPlaces = getSelectedAreaPlaces();
+            rouletteArea.disabled = rouletteArea.options.length <= 1 || isSpinning;
+            spinBtn.disabled = areaPlaces.length < 2 || isSpinning;
+
+            if (isSpinning) return;
+            if (!rouletteArea.value) {
+                rouletteResult.innerHTML = `<span class="text-earth-400 text-sm">Önce bir semt seçin.</span>`;
+            } else if (areaPlaces.length < 2) {
+                rouletteResult.innerHTML = `<span class="text-earth-400 text-sm">${escapeHTML(rouletteArea.value)} semtinde döndürmek için en az 2 mekan ekleyin.</span>`;
+            } else {
+                rouletteResult.innerHTML = `<span class="text-earth-400 font-normal text-lg flex flex-col items-center gap-2"><i class="fa-solid fa-crosshairs text-2xl"></i> ${areaPlaces.length} mekan hazır</span>`;
+            }
+        }
+
+        rouletteArea.addEventListener('change', validateSpinButton);
+
+        spinBtn.addEventListener('click', () => {
+            const areaPlaces = getSelectedAreaPlaces();
+            if (isSpinning || areaPlaces.length < 2) return;
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+            rouletteArea.disabled = true;
+
+            rouletteBox.classList.remove('winner-highlight', 'bg-leaf-600', 'border-leaf-500');
+            rouletteBox.classList.add('bg-earth-800', 'border-earth-900');
+
+            let duration = 3000;
+            let interval = 50;
+            let elapsed = 0;
+
+            const winner = areaPlaces[Math.floor(Math.random() * areaPlaces.length)];
+
+            const timer = setInterval(() => {
+                elapsed += interval;
+
+                if (elapsed > duration * 0.6) interval += 15;
+                if (elapsed > duration * 0.8) interval += 30;
+
+                const randomShow = areaPlaces[Math.floor(Math.random() * areaPlaces.length)];
+                rouletteResult.innerHTML = `<span class="text-white text-xl blur-[1px] opacity-70">${escapeHTML(randomShow.name)}</span>`;
+
+                if (elapsed >= duration) {
+                    clearInterval(timer);
+
+                    rouletteResult.innerHTML = `
+                        <div class="flex flex-col items-center justify-center transform transition-all duration-500 scale-110">
+                            <span class="text-[10px] md:text-xs text-leaf-300 uppercase tracking-widest font-bold mb-1">Pusula Seçti</span>
+                            <span class="text-2xl md:text-3xl font-extrabold text-white drop-shadow-lg">${escapeHTML(winner.name)}</span>
+                            <span class="text-xs text-leaf-200 mt-1"><i class="fa-solid fa-location-dot"></i> ${escapeHTML(winner.area)}</span>
+                        </div>
+                    `;
+
+                    rouletteBox.classList.remove('bg-earth-800', 'border-earth-900');
+                    rouletteBox.classList.add('bg-leaf-600', 'winner-highlight');
+
+                    setTimeout(() => {
+                        isSpinning = false;
+                        validateSpinButton();
+                    }, 2000);
+                }
+            }, interval);
+        });
+
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>"']/g, tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[tag]));
+        }
+
+        window.showAlert = function(title, message) {
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = message;
+            const modal = document.getElementById('alert-modal');
+            const content = document.getElementById('alert-content');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            });
+        }
+
+        window.closeAlert = function() {
+            const modal = document.getElementById('alert-modal');
+            const content = document.getElementById('alert-content');
+
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
